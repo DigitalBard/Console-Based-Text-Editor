@@ -19,6 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="실습1.cpp" />
     <ClCompile Include="실습2.cpp" />
     <ClCompile Include="실습3.cpp" />
@@ -28,10 +32,6 @@
     <ClCompile Include="실습6.cpp" />
     <ClCompile Include="실습7.cpp" />
     <ClCompile Include="실습8.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include=".gitattributes" />
-    <None Include=".gitignore" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
