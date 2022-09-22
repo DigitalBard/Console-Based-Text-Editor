@@ -15,13 +15,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="실습4_1.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="실습1.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
     <ClCompile Include="실습2.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="실습3.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="실습4.cpp">
+    <ClCompile Include="실습4_2.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="실습5.cpp">
@@ -36,8 +42,9 @@
     <ClCompile Include="실습8.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="실습1.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
   </ItemGroup>
 </Project>
