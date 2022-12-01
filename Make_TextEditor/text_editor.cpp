@@ -43,11 +43,6 @@ public:
 				printLine(rows[i]);
 			}
 		}
-		else if (page == rows.size() / 20) {
-			for (size_t i = rows.size() - 20; i < rows.size(); i++) {
-				printLine(rows[i]);
-			}
-		}
 		else {
 			for (int i = page * 20 - 20; i < page * 20; i++) {
 				printLine(rows[i]);
@@ -73,7 +68,8 @@ enum class EditorError {
 	ArgRangeError,
 	InputFormatError,
 	NothingToChangeError,
-	CannotFindError
+	CannotFindError,
+	StringTooLongError
 };
 
 class EditorException : public exception {
@@ -130,8 +126,25 @@ public:
 			throw EditorException(EditorError::ArgRangeError);
 		}
 
-		string changed = rows[row + (page * 20 - 20)].insert(idx, words);
-		rows[row + (page * 20 - 20)] = changed;
+		if (words.length() > words.max_size()) {
+			throw EditorException(EditorError::StringTooLongError);
+		}
+
+		if (page == rows.size() / 20 + 1) {
+			if (rows[row + (rows.size() - 20)].length() < idx) {
+				throw EditorException(EditorError::ArgRangeError);
+			}
+			string changed = rows[row + (rows.size() - 20)].insert(idx, words);
+			rows[row + (rows.size() - 20)] = changed;
+		}
+		else {
+			if (rows[row + (page * 20 - 20)].length() < idx) {
+				throw EditorException(EditorError::ArgRangeError);
+			}
+			string changed = rows[row + (page * 20 - 20)].insert(idx, words);
+			rows[row + (page * 20 - 20)] = changed;
+		}
+		
 		line = "";
 		for (vector<string>::iterator itr = rows.begin(); itr != rows.end(); ++itr) {
 			line += *itr;
@@ -149,8 +162,21 @@ public:
 			throw EditorException(EditorError::ArgRangeError);
 		}
 
-		string changed = rows[row + (page * 20 - 20)].replace(idx, len, "");
-		rows[row + (page * 20 - 20)] = changed;
+		if (page == rows.size() / 20 + 1) {
+			if (rows[row + (rows.size() - 20)].length() < idx) {
+				throw EditorException(EditorError::ArgRangeError);
+			}
+			string changed = rows[row + (rows.size() - 20)].replace(idx, len, "");
+			rows[row + (rows.size() - 20)] = changed;
+		}
+		else {
+			if (rows[row + (page * 20 - 20)].length() < idx) {
+				throw EditorException(EditorError::ArgRangeError);
+			}
+			string changed = rows[row + (page * 20 - 20)].replace(idx, len, "");
+			rows[row + (page * 20 - 20)] = changed;
+		}
+
 		line = "";
 		for (vector<string>::iterator itr = rows.begin(); itr != rows.end(); ++itr) {
 			line += *itr;
@@ -215,8 +241,6 @@ class AppController {
 	vector<string> rows;
 	int page = 1;
 
-
-
 	void print_previous_page(vector<string> rows, int& page) {
 		if (page == 1) {
 			view->print_page(rows, page);
@@ -231,7 +255,7 @@ class AppController {
 	}
 
 	void print_next_page(vector<string> rows, int& page) {
-		if (page == rows.size() / 20 + 1) {
+		if ((rows.size() % 20 == 0 && page == rows.size() / 20) || page == rows.size() / 20 + 1) {
 			view->print_page(rows, page);
 			view->print_guide();
 			view->print_message("This is the last page!");
@@ -357,6 +381,9 @@ class AppController {
 		case EditorError::CannotFindError:
 			view->print_message("Cannot Find the word(s)!");
 			break;
+		case EditorError::StringTooLongError:
+			view->print_message("The length of words to insert is too long!");
+			break;
 		default:
 			break;// nothing to do
 		}
@@ -390,22 +417,35 @@ public:
 					break;
 				case 'i':
 				{
+					size_t original_pages = (rows.size() % 20 == 0) ? rows.size() / 20 : rows.size() / 20 + 1;
 					args = parse_args_for_insert(get_args(input));
 					int row = string_to_integer(args[0]) - 1;
 					int idx = string_to_integer(args[1]);
 					string words = args[2];
 					rows = editor->insert_words(row, idx, words, page);
+
+					size_t renewed_pages = (rows.size() % 20 == 0) ? rows.size() / 20 : rows.size() / 20 + 1;
+					if (renewed_pages > original_pages && page == original_pages) {
+						page += (renewed_pages - original_pages);
+					}
+
 					view->print_page(rows, page);
 					view->print_guide();
 					break;
 				}
 				case 'd':
 				{
+					size_t origin = rows.size();
 					args = parse_args_for_delete(get_args(input));
 					int row = string_to_integer(args[0]) - 1;
 					int idx = string_to_integer(args[1]);
 					int len = string_to_integer(args[2]);
 					rows = editor->delete_words(row, idx, len, page);
+
+					if (rows.size() % 20 == 0 && rows.size() < origin && page > rows.size() / 20) {
+						page--;
+					}
+
 					view->print_page(rows, page);
 					view->print_guide();
 
