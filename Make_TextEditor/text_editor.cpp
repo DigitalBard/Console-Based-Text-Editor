@@ -197,7 +197,7 @@ public:
 		return rows;
 	}
 
-	void save_and_quit() {
+	void saveFile() {
 		ofstream ofs(file_name, ios::out | ios::trunc);
 		if (ofs.is_open()) {
 			ofs << line;
@@ -445,7 +445,7 @@ public:
 			view->print_division();
 		}
 
-		editor->save_and_quit();
+		editor->saveFile();
 	}
 }; // end of AppController
 
