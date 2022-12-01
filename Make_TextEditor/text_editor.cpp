@@ -126,7 +126,7 @@ public:
 	vector<string> get_rows() { return rows; } // 75 바이트씩 들어있는 벡터 반환
 
 	vector<string> insert_words(int row, int idx, string words, int page) {
-		if (row < 0 || row > 19 || idx < 1 || idx > 75) {
+		if (row < 0 || row > 19 || idx < 0 || idx > 75) {
 			throw EditorException(EditorError::ArgRangeError);
 		}
 
@@ -403,7 +403,7 @@ public:
 				{
 					args = parse_args_for_delete(get_args(input));
 					int row = string_to_integer(args[0]) - 1;
-					int idx = string_to_integer(args[1]) - 1;
+					int idx = string_to_integer(args[1]);
 					int len = string_to_integer(args[2]);
 					rows = editor->delete_words(row, idx, len, page);
 					view->print_page(rows, page);
