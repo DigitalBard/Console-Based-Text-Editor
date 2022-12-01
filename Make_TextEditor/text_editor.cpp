@@ -106,7 +106,7 @@ class Editor {
 		}
 	}
 
-	void openFile() {
+	void readFile() {
 		ifstream ifs(file_name);
 		if (ifs.is_open()) {
 			while (getline(ifs, line)) {
@@ -120,7 +120,7 @@ class Editor {
 	}
 public:
 	Editor(string file_name) : file_name(file_name) {
-		openFile();
+		readFile();
 	}
 
 	vector<string> get_rows() { return rows; } // 75 바이트씩 들어있는 벡터 반환
