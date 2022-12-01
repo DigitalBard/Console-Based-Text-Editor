@@ -88,10 +88,6 @@ class Editor {
 	vector<string> rows;
 
 	void replaceAll(string& str, string from, string to) {
-		if (from.length() > from.max_size() || to.length() > to.max_size()) {
-			throw EditorException(EditorError::StringTooLongError);
-		}
-
 		size_t pos;
 		size_t offset = 0;
 		int count = 0;
