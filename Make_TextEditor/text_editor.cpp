@@ -88,6 +88,10 @@ class Editor {
 	vector<string> rows;
 
 	void replaceAll(string& str, string from, string to) {
+		if (from.length() > from.max_size() || to.length() > to.max_size()) {
+			throw EditorException(EditorError::StringTooLongError);
+		}
+
 		size_t pos;
 		size_t offset = 0;
 		int count = 0;
@@ -240,6 +244,30 @@ class AppController {
 	AppView* view;
 	vector<string> rows;
 	int page = 1;
+
+	void modify_page_num(int row, int idx, string words, int& page) {
+		int spells = 0;
+		for (int i = 1; i <= row + 1; i++) {
+			if (i == row + 1) {
+				spells += idx;
+			}
+			else {
+				spells += 75;
+			}
+		}
+
+		int addedSpells = words.length();
+		int totalSpells = spells + addedSpells;
+
+		if (totalSpells >= 1500) {
+			if ((totalSpells) % 1500 == 0) {
+				page += totalSpells / 1500 - 1;
+			}
+			else {
+				page += totalSpells / 1500;
+			}
+		}
+	}
 
 	void print_previous_page(vector<string> rows, int& page) {
 		if (page == 1) {
@@ -417,17 +445,13 @@ public:
 					break;
 				case 'i':
 				{
-					size_t original_pages = (rows.size() % 20 == 0) ? rows.size() / 20 : rows.size() / 20 + 1;
 					args = parse_args_for_insert(get_args(input));
 					int row = string_to_integer(args[0]) - 1;
 					int idx = string_to_integer(args[1]);
 					string words = args[2];
 					rows = editor->insert_words(row, idx, words, page);
 
-					size_t renewed_pages = (rows.size() % 20 == 0) ? rows.size() / 20 : rows.size() / 20 + 1;
-					if (renewed_pages > original_pages && page == original_pages) {
-						page += (renewed_pages - original_pages);
-					}
+					modify_page_num(row, idx, words, page);
 
 					view->print_page(rows, page);
 					view->print_guide();
